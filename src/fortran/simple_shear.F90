@@ -310,6 +310,7 @@ PROGRAM SimpleShearExample
   CALL OC_Field_GeometricFieldSet(dependentField,geometricField,err)
   CALL OC_Field_DependentTypeSet(dependentField,OC_FIELD_DEPENDENT_TYPE,err)
   CALL OC_Field_NumberOfVariablesSet(dependentField,2,err)
+  CALL OC_Field_VariableTypesSet(dependentField,[OC_FIELD_U_VARIABLE_TYPE,OC_FIELD_T_VARIABLE_TYPE],err)
   CALL OC_Field_VariableLabelSet(dependentField,OC_FIELD_U_VARIABLE_TYPE,"Dependent",err)
   CALL OC_Field_NumberOfComponentsSet(dependentField,OC_FIELD_U_VARIABLE_TYPE,numberOfDependentComponents,err)
   IF(usePressureBasis) THEN
@@ -387,7 +388,7 @@ PROGRAM SimpleShearExample
   CALL OC_Problem_SolverGet(problem,OC_CONTROL_LOOP_NODE,1,solver,err)
   CALL OC_Solver_OutputTypeSet(solver,OC_SOLVER_PROGRESS_OUTPUT,err)
   !CALL OC_Solver_OutputTypeSet(solver,OC_SOLVER_MATRIX_OUTPUT,err)
-  CALL OC_Solver_NewtonJacobianCalculationTypeSet(solver,OC_SOLVER_NEWTON_JACOBIAN_FD_CALCULATED,err)
+  CALL OC_Solver_NewtonJacobianCalculationTypeSet(solver,OC_SOLVER_NEWTON_JACOBIAN_EQUATIONS_CALCULATED,err)
   CALL OC_Solver_NewtonLinearSolverGet(solver,linearSolver,err)
   CALL OC_Solver_LinearTypeSet(linearSolver,OC_SOLVER_LINEAR_DIRECT_SOLVE_TYPE,err)
   CALL OC_Problem_SolversCreateFinish(problem,err)
@@ -410,7 +411,7 @@ PROGRAM SimpleShearExample
     DO xNodeIdx=1,numberOfGlobalXNodes
       !Fix the bottom nodes in all directions
       nodeNumber=xNodeIdx+(zNodeIdx-1)*numberOfGlobalXNodes*numberOfGlobalYNodes
-      CALL OC_Decomposition_NodeDomainGet(decomposition,nodeNumber,1,nodeDomain,err)
+      CALL OC_Decomposition_NodeDomainGet(decomposition,1,nodeNumber,nodeDomain,err)
       IF(nodeDomain==computationalNodeNumber) THEN
         !x-direction
         CALL OC_BoundaryConditions_AddNode(boundaryConditions,dependentField,OC_FIELD_U_VARIABLE_TYPE,1,1,nodeNumber,1, &
@@ -426,7 +427,7 @@ PROGRAM SimpleShearExample
       ENDIF
       !Fix the top nodes to 10% x-displacement and fixing the other directions
       nodeNumber=xNodeIdx+numberOfGlobalXNodes*(numberOfGlobalYNodes-1)+(zNodeIdx-1)*numberOfGlobalXNodes*numberOfGlobalYNodes
-      CALL OC_Decomposition_NodeDomainGet(decomposition,nodeNumber,1,nodeDomain,err)
+      CALL OC_Decomposition_NodeDomainGet(decomposition,1,nodeNumber,nodeDomain,err)
       IF(nodeDomain==computationalNodeNumber) THEN
         !x-direction
         CALL OC_BoundaryConditions_AddNode(boundaryConditions,dependentField,OC_FIELD_U_VARIABLE_TYPE,1,1,nodeNumber,1, &
